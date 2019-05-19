@@ -83,7 +83,38 @@ def provisioning():
 
 
 #InitializeQFIL()
-provisioning()
+#provisioning()
+
+class locateMouse:
+    pic_name,icrs_x,decre_x,icrs_y,decre_y = ["",0,0,0,0]
+ 
+    def assignVal(self,inputList = []):
+        self.pic_name = inputList[0]
+        self.icrs_x = inputList[1]
+        self.decre_x = inputList[2]
+        self.icrs_y = inputList[3]
+        self.decre_y = inputList[4]
+   
+    def locationOnScreen(self):
+        x, y = pyautogui.locateCenterOnScreen(self.pic_name)
+        x += self.icrs_x
+        x -= self.decre_x
+        y += self.icrs_y
+        y -= self.decre_y
+        return x,y
+        
+    def leftClick(self):
+        x,y = self.locationOnScreen()
+        print("x:",x)
+        
+        
+items = ["SelectPort.PNG",50,1,2,3]
+a = locateMouse()
+a.assignVal(items)
+a.leftClick()
+items = ["SelectPort.PNG",59,1,2,3]
+a.assignVal(items)
+a.leftClick()
 
 
 
