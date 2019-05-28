@@ -7,84 +7,51 @@ import sys
 import subprocess
 startQFIL = "startQFIL.ps1"
 
-#class StartQFIL:
+def checkPortAvailable():
+    portAvailable = None
+    portAvailable = pyautogui.locateOnScreen("images\\NoPortAvailable.png", confidence=0.8)
+    if portAvailable is not None :
+        print("No Port Available")
+        sys.exit(1)
+
+def gotoEDLmode():
+    print("checking EDL mode...")
+    adb_out = str(subprocess.check_output(["adb","devices"]))
+    if("\\tdevice\\r" in adb_out):
+        print("Go to EDL mode.")
+        subprocess.call("adb reboot edl")
+    else:
+        print("adb devices not found")
+        
+
 def InitializeQFIL():
-    print("StartQFIL...............")
+    print("Checking QFIL...............")
     try:
-        cmd="powershell" + "  " + ".\\" + startQFIL
+        cmd="powershell" + " -noprofile -executionpolicy bypass -file " + ".\\" + startQFIL
         subprocess.call(cmd)
     except OSError:  
         print("NOT ABLE TO EXECUTE QFIL")
         sys.exit(1)
 
-    SelectPort = pyautogui.locateOnScreen("SelectPort.png")
+    SelectPort = None
 
     while SelectPort is None :
         print("Loading QFIL.")
-        SelectPort = pyautogui.locateOnScreen("SelectPort.png")
+        SelectPort = pyautogui.locateOnScreen("images\\SelectPort.png", confidence=0.8)
         time.sleep(2)
-
     print("Initialize QFIL Done ...")
     
-def locationOnScreen(pic_name,icrs_x,decre_x,icrs_y,decre_y):
-    print("icrs_y:",icrs_y)
-    x, y = pyautogui.locateCenterOnScreen(pic_name)
-    print("x:",x)
-    print("y:",y)
-    x += icrs_x
-    x -= decre_x
-    y = y + icrs_y
-    #y = y + 50
-    print("y1:",y)
-    y -= decre_y
-    print("x1:",x)
-    
-    return x,y
-
-def locateThenLeftClick(pic_name,icrs_x,decre_x,icrs_y,decre_y):
-    print("icrs_y_0:",icrs_y)
-    x,y = locationOnScreen(pic_name,icrs_x,decre_x,icrs_x,decre_y)
-    pyautogui.click(x, y)
-    time.sleep(1)
-    
-def locateThenDoubleClick(pic_name,icrs_x,decre_x,icrs_y,decre_y):
-    x,y = locationOnScreen(pic_name,icrs_x,decre_x,icrs_x,decre_y)
-    pyautogui.doubleClick(x,y)
-    time.sleep(1)
 
 def file_get_contents(filename):
     with open(filename, 'r') as f:
         return f.read()
 
-def provisioning():
-    '''
-    locateThenLeftClick("SelectPort.png", 0, 0, 0, 0)
-    locateThenLeftClick("OK_button.png", 0, 0, 0, 0)
-    locateThenLeftClick("Configuration.png", 0, 0, 0, 0)
-    locateThenLeftClick("FileHoseConfiguration.png", 0, 0, 0, 0)
-    locateThenLeftClick("Provision.png", 0, 0, 0, 0)
-    locateThenLeftClick("OK_button.png", 0, 0, 0, 0)
 
-    ProgrammerPath = file_get_contents(os.path.join('.','Path', 'ProgrammerPath.txt'))
-    locateThenLeftClick("ProgrammerPath.png", 50, 0, 0, 0)
-    print(ProgrammerPath)
-    pyautogui.hotkey('ctrl', 'a')
-    pyautogui.typewrite(ProgrammerPath)
-
-    ProvisionXml = file_get_contents(os.path.join('.','Path', 'ProvisionXml.txt'))
-    locateThenLeftClick("ProvisionXml.png", 70, 0, 0, 0)
-    print("000000000000000000000000000000")
-    pyautogui.hotkey('ctrl', 'a')
-    pyautogui.typewrite(ProvisionXml)
-    '''
-    locateThenLeftClick("SelectPort_Browse.png",0,0,50,0)
-
-
-
-
-#InitializeQFIL()
-#provisioning()
-
+def typewrite_contents(filename):
+    filecontents = file_get_contents(filename)
+    pyautogui.typewrite(filecontents)
+    time.sleep(2)
+    
 class locateMouse:
     pic_name,icrs_x,decre_x,icrs_y,decre_y = ["",0,0,0,0]
  
@@ -94,27 +61,124 @@ class locateMouse:
         self.decre_x = inputList[2]
         self.icrs_y = inputList[3]
         self.decre_y = inputList[4]
+        print(self.pic_name)
    
     def locationOnScreen(self):
-        x, y = pyautogui.locateCenterOnScreen(self.pic_name)
+        x, y = pyautogui.locateCenterOnScreen(self.pic_name,confidence=0.8)
         x += self.icrs_x
         x -= self.decre_x
         y += self.icrs_y
         y -= self.decre_y
         return x,y
         
-    def leftClick(self):
+    def leftClick(self,inputList = []):
+        self.assignVal(inputList)
+        time.sleep(3)
         x,y = self.locationOnScreen()
-        print("x:",x)
+        pyautogui.click(x, y)
         
-        
-items = ["SelectPort.PNG",50,1,2,3]
-a = locateMouse()
-a.assignVal(items)
-a.leftClick()
-items = ["SelectPort.PNG",59,1,2,3]
-a.assignVal(items)
-a.leftClick()
+      
+def provisioning():
+
+    able2Provi= None
+    notAble2Provi = None
+    
+    print("Start Provisioning...")
+    a = locateMouse()
+    a.leftClick(["images\\SelectPort.png", 0, 0, 0, 0])
+    a.leftClick(["images\\OK_button.png", 0, 0, 0, 0])
+    a.leftClick(["images\\Configuration.png", 0, 0, 0, 0])
+    a.leftClick(["images\\FileHoseConfiguration.png", 0, 0, 0, 0])
+    a.leftClick(["images\\DeviceType.png", 0, 0, 0, 5])
+    pyautogui.move(0, 30)
+    pyautogui.click()
+    a.leftClick(["images\\Provision.png", 0, 0, 0, 0])
+    a.leftClick(["images\\OK_button.png", 0, 0, 0, 0])
+    a.leftClick(["images\\ProgrammerPath.png", 850, 0, 0, 0])
+    a.leftClick(["images\\FileName.png", 100, 0, 0, 0])
+    #time.sleep(16)
+    typewrite_contents("Path\\ProgrammerPath.txt")
+    #time.sleep(3)
+    #a.leftClick(["images\\Open.png", 0, 0, 0, 0])
+    a.leftClick(["images\\ProvisionXml.png", 850, 0, 0, 0])
+    a.leftClick(["images\\FileName.png", 100, 0, 0, 0])
+    typewrite_contents("Path\\ProvisionXml.txt")
+    
+    a.leftClick(["images\\Open.png", 0, 0, 0, 0])
+    gotoEDLmode()
+    a.leftClick(["images\\SelectPort.png", 0, 0, 0, 0])
+    a.leftClick(["images\\OK_button.png", 0, 0, 0, 0])
+    print("Check if provisioning is possible...")
+    try:
+        able2Provi= pyautogui.locateOnScreen("images\\Able2Provisioning.png")
+    except OSError:
+        print("Able2Provisioning.png Not Found on Screen")
+       
+    try:
+        notAble2Provi = pyautogui.locateOnScreen("images\\NotAble2Provisioning.png")
+    except OSError:
+        print("NotAble2Provisioning.png Not Found On Screen")
+    
+    if (notAble2Provi is not None and able2Provi is None ):
+        print("Not able to provisioning")
+        sys.exit()
+    else:
+        print("able to provisioning")
+        a.leftClick(["images\\Able2Provisioning.png", 0, 0, 0, 0])
+
+def flatbuild():
+    able2dl = None
+    notAble2dl = None
+    
+    print("Flashing image(Flat Build)...")
+    a = locateMouse()
+    a.leftClick(["images\\SelectPort.png", 0, 0, 0, 0])
+    a.leftClick(["images\\OK_button.png", 0, 0, 0, 0])
+    a.leftClick(["images\\flatbuild\\FlatBuild.png", 0, 0, 0, 0])
+    a.leftClick(["images\\ProgrammerPath.png", 850, 0, 0, 0])
+    a.leftClick(["images\\FileName.png", 100, 0, 0, 0])
+    typewrite_contents("Path\\ProgrammerPath.txt")
+    
+    #a.leftClick(["images\\Open.png", 0, 0, 0, 0])
+    a.leftClick(["images\\flatbuild\\LoadXML.png", 0, 0, 0, 0])
+    
+    #for-loop for 2 times
+    for i in range(1,3):
+        a.leftClick(["images\\FileName.png", 100, 0, 0, 100])
+        time.sleep(3)
+        print("sending Ctrl A")
+        pyautogui.hotkey('ctrl', 'a')
+        time.sleep(3)
+        a.leftClick(["images\\Open.png", 0, 0, 0, 0])
+    
+    #Check if DOWNLOAD image is possible
+    try:
+        able2dl= pyautogui.locateOnScreen("images\\flatbuild\\Able2Download.png")
+    except OSError:
+        print("Able2Download.png Not Found on Screen")
+       
+    try:
+        notAble2dl = pyautogui.locateOnScreen("images\\flatbuild\\NotAble2Dowload.png")
+    except OSError:
+        print("NotAble2Dowload.png Not Found On Screen")
+    
+    if (notAble2dl is not None and able2dl is None ):
+        print("Not able to DOWNLOAD image")
+        sys.exit()
+    else:
+        print("able to download/flash image")
+        a.leftClick(["images\\flatbuild\\Able2Download.png", 0, 0, 0, 0])
+ 
+   
+InitializeQFIL()
+checkPortAvailable()
+provisioning()
+pyautogui.confirm(text='Please manualy reset Power Supply then press OK',title='AUTO QFIL',buttons=['ok','cancle'])
+InitializeQFIL()
+checkPortAvailable()
+flatbuild()
+
+
 
 
 

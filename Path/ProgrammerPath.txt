@@ -1,1 +1,1 @@
-\\buildshare.auto.geely.com\images\koreagit\AP_DCY11_IHU_CN_DCY11_IP721A_19050701-master\prog_ufs_firehose_8996_ddr.elf
+prog_ufs_firehose_8996_ddr.elf
