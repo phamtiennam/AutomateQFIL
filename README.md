@@ -6,6 +6,7 @@ Usage:
 
 1. Pass your path of image to the txt files in Path-folder
 2. Execute the below command:
+
             python qfil.py
             
 Note:
