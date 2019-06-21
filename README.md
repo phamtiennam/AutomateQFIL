@@ -1,6 +1,7 @@
 # AutomateQFIL
 
 This script will help you flash android image into QUALCOMM devices *Automatically*
+
 Usage:
 
 1. Pass your path of image to the txt files in Path-folder
