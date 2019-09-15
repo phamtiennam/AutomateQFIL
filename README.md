@@ -2,6 +2,8 @@
 
 This script will help you flash android image into QUALCOMM devices *Automatically*
 
+[YOUTUBE DEMO](https://youtu.be/GRAyWs6-UTg)
+
 Usage:
 
 1. Pass your path of image to the txt files in Path-folder
