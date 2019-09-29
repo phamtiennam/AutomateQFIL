@@ -2,7 +2,7 @@
 
 This script will help you flash android image into QUALCOMM devices *Automatically*
 
-[YOUTUBE DEMO](https://youtu.be/GRAyWs6-UTg)
+[![](http://img.youtube.com/vi/GRAyWs6-UTg/0.jpg)](http://www.youtube.com/watch?v=GRAyWs6-UTg "")
 
 Usage:
 
